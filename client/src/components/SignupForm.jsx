@@ -1,35 +1,34 @@
 import { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-//Import mutation from apollo
 import { useMutation } from "@apollo/client";
-// import { createUser } from "../utils/API";
 import Auth from "../utils/auth";
-//Import mutation
 import { ADD_USER } from "../utils/mutations";
 
+// SignupForm component for handling user registration functionality
 const SignupForm = () => {
-  // set initial form state
+  // State variables for user input, form validation, and alert display
   const [userFormData, setUserFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
-  // set state for form validation
   const [validated] = useState(false);
-  // set state for alert
   const [showAlert, setShowAlert] = useState(false);
-  //Set up mutation
+
+  // GraphQL mutation hook for adding a new user
   const [addUser, { error, data }] = useMutation(ADD_USER);
 
+  // Event handler for input field changes
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUserFormData({ ...userFormData, [name]: value });
   };
 
+  // Event handler for form submission
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // check if form has everything (as per react-bootstrap docs)
+    // Validate the form using React Bootstrap validation
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
@@ -37,17 +36,19 @@ const SignupForm = () => {
     }
 
     try {
-      //implement mutation passing the user data from the form that is saved in the state as the variables
       const { data } = await addUser({
         variables: { ...userFormData },
       });
 
+      // If successful, log in the new user and set the JWT token
       Auth.login(data.addUser.token);
     } catch (err) {
       console.error(err);
+      // If registration fails, shows an alert to the user
       setShowAlert(true);
     }
 
+    // Clear the user input fields after form submission
     setUserFormData({
       username: "",
       email: "",

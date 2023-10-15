@@ -1,27 +1,27 @@
 import { Container, Card, Button, Row, Col } from "react-bootstrap";
-
 import Auth from "../utils/auth";
 import { removeBookId } from "../utils/localStorage";
 import { useMutation, useQuery } from "@apollo/client";
-//Import query to find user
-import { GET_ME } from "../utils/queries";
-//Import mutation to remove a book
 import { REMOVE_BOOK } from "../utils/mutations";
+import { GET_ME } from "../utils/queries";
+
 const SavedBooks = () => {
-  //Set up Query
+  // Fetch user data from the server
   const { loading, data } = useQuery(GET_ME);
-  //save to const
+  // Extract user data from the query response, or set it to an empty object if data is not available yet
   const userData = data?.me || {};
 
+  // Calculate the number of properties in the userData object
   const userDataLength = Object.keys(userData).length;
 
-  //Set up mutation to remove book
+  // Define the removeBook mutation and handleDeleteBook function to delete a saved book
   const [removeBook, { error }] = useMutation(REMOVE_BOOK, {
     refetchQueries: [],
   });
-  // create function that accepts the book's mongo _id value as param and deletes the book from the database
+
+  // Function to handle deleting a book
   const handleDeleteBook = async (bookId) => {
-    //Check logged in
+    // Check if the user is logged in and get the authentication token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
     if (!token) {
@@ -29,22 +29,22 @@ const SavedBooks = () => {
     }
 
     try {
-      //Implement mutation to remove book from db
+      // Call the removeBook mutation to remove the book from the user's saved books
       const { data } = await removeBook({
         variables: {
           bookId,
         },
       });
 
-      // upon success, remove book's id from localStorage
+      // Remove the book's ID from local storage
       removeBookId(bookId);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
+  // If user data is still rendering, display a loading message
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
