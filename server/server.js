@@ -54,7 +54,8 @@ the server sends the index.html file,
 
 
 db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
+  app.listen(PORT, () => 
+  console.log(`🌍 Now listening on http://localhost:${PORT}`));
   console.log(`GraphQL server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });
 
