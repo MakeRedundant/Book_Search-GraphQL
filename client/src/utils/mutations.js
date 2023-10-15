@@ -1,7 +1,6 @@
-//Import from apollo
 import { gql } from "@apollo/client";
 
-//Mutation to login user. return a user and token
+// Mutation to log in a user and return a token and user data
 export const LOGIN_USER = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -14,7 +13,7 @@ export const LOGIN_USER = gql`
   }
 `;
 
-//Mutation to add a user. return a user and token
+// Mutation to add a new user and return a token and user data
 export const ADD_USER = gql`
   mutation addUser($username: String!, $email: String!, $password: String!) {
     addUser(username: $username, email: $email, password: $password) {
@@ -27,7 +26,7 @@ export const ADD_USER = gql`
   }
 `;
 
-//Mutation to save a book, return a user
+// Mutation to save a new book to the user's profile and return updated user data
 export const SAVE_BOOK = gql`
   mutation saveBook(
     $authors: [String]!
@@ -62,7 +61,7 @@ export const SAVE_BOOK = gql`
   }
 `;
 
-// Mutation to remove a book. Returns user
+// Mutation to remove a book from the user's profile and return updated user data
 export const REMOVE_BOOK = gql`
   mutation removeBook($bookId: String) {
     removeBook(bookId: $bookId) {
@@ -82,3 +81,6 @@ export const REMOVE_BOOK = gql`
     }
   }
 `;
+
+
+//These mutations provide essential functionality for user authentication, registration, managing saved books, and book removal in the GraphQL API. 

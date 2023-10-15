@@ -1,49 +1,52 @@
-// use this to decode a token and get the user's information out of it
+// Import the jwt-decode library for decoding JWT tokens
 import decode from 'jwt-decode';
 
-// create a new class to instantiate for a user
+// AuthService class responsible for handling user authentication and token management
 class AuthService {
-  // get user data
+  // Method to decode the JWT token and return the user profile information
   getProfile() {
     return decode(this.getToken());
   }
 
-  // check if user's logged in
+  // Method to check if a user is logged in based on the presence and validity of the JWT token
   loggedIn() {
-    // Checks if there is a saved token and it's still valid
     const token = this.getToken();
-    return !!token && !this.isTokenExpired(token); // handwaiving here
+    return !!token && !this.isTokenExpired(token);
   }
 
-  // check if token is expired
+  // Method to check if a given JWT token is expired
   isTokenExpired(token) {
     try {
+      // Decode the token to obtain expiration time and compare with the current time
       const decoded = decode(token);
       if (decoded.exp < Date.now() / 1000) {
         return true;
-      } else return false;
+      } else {
+        return false;
+      }
     } catch (err) {
-      return false;
+      // If an error occurs during token decoding, consider the token as expired and return true
+      return true;
     }
   }
 
+  // Method to retrieve the JWT token from localStorage
   getToken() {
-    // Retrieves the user token from localStorage
     return localStorage.getItem('id_token');
   }
 
+  // Method to save the JWT token to localStorage and redirect the user to the home page
   login(idToken) {
-    // Saves user token to localStorage
     localStorage.setItem('id_token', idToken);
     window.location.assign('/');
   }
 
+  // Method to remove the JWT token from localStorage and redirect the user to the home page
   logout() {
-    // Clear user token and profile data from localStorage
     localStorage.removeItem('id_token');
-    // this will reload the page and reset the state of the application
     window.location.assign('/');
   }
 }
 
+// Export an instance of the AuthService class
 export default new AuthService();
