@@ -1,78 +1,103 @@
-const { AuthenticationError } = require('apollo-server-express');
-const { User } = require('../models');
-const { signToken } = require('../utils/auth');
+const { User } = require("../models");
+const { signToken, AuthenticationError } = require("../utils/auth");
 
 const resolvers = {
   Query: {
+    // Resolver for the 'me' query. Fetches user data if authenticated.
     me: async (parent, args, context) => {
+      // Check if user is authenticated using context
       if (context.user) {
-        // If there is a user in the context (i.e., the user is authenticated)
-        // Fetch user data from the database based on the user's ID
-        const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
-        
-        // Return user data, excluding '__v' and 'password' fields
-        return userData;
+        // If authenticated, return user data
+        return User.findOne({ _id: context.user._id });
       }
-      // If there is no user in the context (i.e., the user is not authenticated)
-      // Throw an AuthenticationError indicating that the user needs to be logged in
-      throw new AuthenticationError('Error, You need to be logged in!');
+      // If not authenticated, throw authentication error
+      throw AuthenticationError;
     },
   },
-
-  Mutation: { //This mutation adds a new user to the database.
-    addUser: async (parent, args) => {
-      const user = await User.create(args);
-      const token = signToken(user);
-      return { token, user };
-    },
-    login: async (parent, { email, password }) => { //This mutation handles user login and authentication.
+  Mutation: {
+    // Resolver for the 'login' mutation. Validates credentials and returns user data and token.
+    login: async (parent, { email, password }) => {
+      // Find user by email
       const user = await User.findOne({ email });
 
+      // If user not found, throw authentication error
       if (!user) {
-        throw new AuthenticationError('No user found');
+        throw AuthenticationError;
       }
 
+      // Check if provided password is correct
       const correctPw = await user.isCorrectPassword(password);
 
+      // If incorrect password, throw authentication error
       if (!correctPw) {
-        throw new AuthenticationError('Error, Incorrect password');
+        throw AuthenticationError;
       }
 
+      // Sign a token for the authenticated user
       const token = signToken(user);
 
+      // Return token and user data
       return { token, user };
     },
-    saveBook: async (parent, { newBook }, context) => { //This mutation allows an authenticated user to save a new book.
-      if (context.user) {
-        const updatedUser = await User.findByIdAndUpdate(
-          { _id: context.user._id },
-          { $push: { savedBooks: newBook }},
-          { new: true }
-        );
-        return updatedUser;
-      }
-      throw new AuthenticationError(' Error, You need to be logged in!');
+    // Resolver for the 'addUser' mutation. Creates a new user and returns user data and token.
+    addUser: async (parent, { username, email, password }) => {
+      // Create a new user
+      const user = await User.create({ username, email, password });
+      // Sign a token for the new user
+      const token = signToken(user);
+      // Return token and user data
+      return { token, user };
     },
-    removeBook: async (parent, { bookId }, context) => { // This mutation allows an authenticated user to remove a saved book.
+    // Resolver for the 'saveBook' mutation. Adds a new book to user's savedBooks list.
+    saveBook: async (
+      parent,
+      { authors, description, title, bookId, image, link },
+      context
+    ) => {
+      // Check if user is authenticated using context
       if (context.user) {
-        const updatedUser = await User.findByIdAndUpdate(
+        // Add the new book to user's savedBooks list
+        const user = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $pull: { savedBooks: { bookId }}},
-          { new: true }
+          {
+            $addToSet: {
+              savedBooks: {
+                authors,
+                description,
+                title,
+                bookId,
+                image,
+                link,
+              },
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
         );
-        return updatedUser;
+        // Return updated user data
+        return user;
       }
-      throw new AuthenticationError(' Error, You need to be logged in!');
+      // If user not authenticated, throw authentication error
+      throw AuthenticationError;
+    },
+    // Resolver for the 'removeBook' mutation. Removes a book from user's savedBooks list.
+    removeBook: async (parent, { bookId }, context) => {
+      // Check if user is authenticated using context
+      if (context.user) {
+        // Remove the specified book from user's savedBooks list
+        const user = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId } } },
+          { runValidators: true, new: true }
+        );
+        // Return updated user data
+        return user;
+      }
+      // If user not authenticated, no action is performed
     },
   },
 };
 
-//In summary, these mutations handle user registration, login, saving books, and removing books. They ensure authentication and perform database operations based on user actions. If a user is not authenticated, errors are thrown.
-
 module.exports = resolvers;
-
-/*
-
-The me resolver fetches the authenticated user based on the context.user information. If the user is not authenticated, it throws an AuthenticationError.
-
-*/

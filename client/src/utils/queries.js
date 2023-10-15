@@ -1,13 +1,14 @@
-import { gql } from '@apollo/client';
+//Import from apollo
+import { gql } from "@apollo/client";
 
-//Query to get user info , id etc etc
+//Query to get user, returns user
 export const GET_ME = gql`
-  {
+  query me {
     me {
       _id
       username
       email
-      bookCount
+      password
       savedBooks {
         bookId
         authors
@@ -16,6 +17,7 @@ export const GET_ME = gql`
         image
         link
       }
+      bookCount
     }
   }
 `;

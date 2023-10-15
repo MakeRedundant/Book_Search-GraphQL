@@ -1,21 +1,19 @@
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
 
-const { ApolloServer } = require("apollo-server-express");
+const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
+
+const { authMiddleware } = require("./utils/auth");
+
 const { typeDefs, resolvers } = require("./schemas");
-const { authMiddleware } = require('./utils/auth');
+const db = require("./config/connection");
 
-const db = require('./config/connection');
-// const routes = require('./routes');
-
-const app = express();
 const PORT = process.env.PORT || 3001;
-
+const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: authMiddleware,
 });
 
 /*
@@ -29,8 +27,8 @@ The context object can hold authentication information, database connections, an
 const startApolloServer = async () => {
   await server.start();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
 
   app.use(
     "/graphql",
@@ -39,22 +37,18 @@ app.use(express.json());
     })
   );
 
+  // if we're in production, serve client/dist as static assets
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/dist")));
 
-// if we're in production, serve client/dist as static assets
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
-}
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+    });
+  }
+
 /*
 This code ensures that when the server is running in production mode (NODE_ENV set to 'production'), it serves the static assets from the client/dist directory.
-*/
-
-// app.use(routes);
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
-
-/* 
+ 
 app.get(*) sets up a route handeler for all HTTP Get requests that doesnt match any specific routes defined in your server.
 * is a wild card that matches any path
 
@@ -64,11 +58,13 @@ In summary, this route handler ensures that for any URL requested on the server 
 the server sends the index.html file, 
 */
 
-
-db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
-  console.log(`GraphQL server ready at http://localhost:${PORT}${server.graphqlPath}`);
-});
+  db.once("open", () => {
+    app.listen(PORT, () => {
+      console.log(`API server running on port ${PORT}!`);
+      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
+    });
+  });
+};
 
 //This server uses Express.js and Apollo Server for GraphQL functionality.
 /*
@@ -78,5 +74,6 @@ In production, it serves the React frontend (located in ../client/dist) as stati
 
 */
 
-};
+
+
 startApolloServer();
