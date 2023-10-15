@@ -1,10 +1,12 @@
 const { gql } = require('apollo-server-express');
-
+//statement imports the Apollo Server library for Express.
+// The gql object is destructured from the imported package.
 const typeDefs = gql`
   type User {
     _id: ID!
     username: String!
     email: String!
+    password: String
     bookCount: Int
     savedBooks: [Book]
   }

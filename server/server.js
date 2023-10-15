@@ -30,7 +30,7 @@ app.use(express.json());
 
 // if we're in production, serve client/build as static assets
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  app.use(express.static(path.join(__dirname, '../client/dist')));
 }
 /*
 This code ensures that when the server is running in production mode (NODE_ENV set to 'production'), it serves the static assets from the client/build directory.
@@ -39,7 +39,7 @@ This code ensures that when the server is running in production mode (NODE_ENV s
 // app.use(routes);
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 /* 
@@ -54,8 +54,7 @@ the server sends the index.html file,
 
 
 db.once('open', () => {
-  app.listen(PORT, () => 
-  console.log(`🌍 Now listening on http://localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
   console.log(`GraphQL server ready at http://localhost:${PORT}${server.graphqlPath}`);
 });
 
