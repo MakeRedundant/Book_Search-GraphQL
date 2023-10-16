@@ -1,5 +1,7 @@
 # Booksearch
 
+https://google-book-search-graphql-9b3f0634cfc8.herokuapp.com/
+
 ![Github licence](http://img.shields.io/badge/license-MIT-blue.svg)
 ![JavaScript Badge](https://img.shields.io/badge/JavaScript-100%25-yellow.svg)
 ![Concurrently](https://img.shields.io/badge/Concurrently-Latest%20Version-red.svg)
@@ -20,7 +22,7 @@
 ![eslint-plugin-react](https://img.shields.io/badge/eslint--plugin--react-^7.32.2-00ff00.svg)
 ![eslint-plugin-react-hooks](https://img.shields.io/badge/eslint--plugin--react--hooks-^4.6.0-ff6347.svg)
 ![eslint-plugin-react-refresh](https://img.shields.io/badge/eslint--plugin--react--refresh-^0.3.4-ffa07a.svg)
-![Heroku](https://heroku-badge.herokuapp.com/?app=Google-Books)
+![Heroku](https://heroku-badge.herokuapp.com/)
 
 ## 📄 Description
 This is a web application that allows users to search for their desired books using the Google Books API. Users can sign in/sign up to save their favorite books to be viewed later. The frontend was built using React and Bootstrap, while password hashing was implemented using bcrypt. GraphQL, Apollo Server, and Mongoose were used for the database, providing efficient data management and querying capabilities. JSON Web Tokens (JWT) were employed for secure user authentication and authorization. The application was deployed on Heroku, ensuring accessibility and reliability. Vite was used for fast and efficient development, enhancing the development workflow.
@@ -184,6 +186,8 @@ npm i nodemon@^2.0.6
 ## 💬Usage
 
 Deployed link
+
+https://google-book-search-graphql-9b3f0634cfc8.herokuapp.com/
 
 Users can utilise this web app to search for their desired books using the Google Books API search engine built with GraphQL API/ Apollo Server.
 
