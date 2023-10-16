@@ -41,7 +41,7 @@ const resolvers = {
     },
     // Resolver for the 'addUser' mutation. Creates a new user and returns user data and token.
     addUser: async (parent, { username, email, password }) => {
-      // Create a new user
+      // Creates a new user
       const user = await User.create({ username, email, password });
       // Sign a token for the new user
       const token = signToken(user);
@@ -92,10 +92,8 @@ const resolvers = {
           { $pull: { savedBooks: { bookId } } },
           { runValidators: true, new: true }
         );
-        // Return updated user data
         return user;
       }
-      // If user not authenticated, no action is performed
     },
   },
 };

@@ -21,10 +21,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    // set savedBooks to be an array of data that adheres to the bookSchema
+    // Sets savedBooks to be an array of data that adheres to the bookSchema
     savedBooks: [bookSchema],
   },
-  // set this to use virtual below
+  // Sets this to use virtual below
   {
     toJSON: {
       virtuals: true,
@@ -32,7 +32,7 @@ const userSchema = new Schema(
   }
 );
 
-// hash user password
+// Hashs User password
 userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
     const saltRounds = 10;
@@ -42,15 +42,31 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// custom method to compare and validate password for logging in
+/*This code uses Mongoose middleware (pre('save', ...)) to hash the user's password before saving it to the database. 
+It checks if the password is new or has been modified (using this.isNew and this.isModified('password')). If it's new or modified,
+it hashes the password using the bcrypt library before saving it.
+
+*/
+
 userSchema.methods.isCorrectPassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-// when we query a user, we'll also get another field called `bookCount` with the number of saved books we have
+/*
+This code defines a custom method isCorrectPassword for the user schema. When called, it compares a plain-text password (passed as an argument) 
+with the hashed password stored in the user document. It returns a boolean indicating whether the passwords match.
+*/
+
 userSchema.virtual('bookCount').get(function () {
   return this.savedBooks.length;
 });
+
+/*
+Mongoose virtual (userSchema.virtual(...)) is used to create a computed property bookCount for the user schema.
+When querying a user from the database, this virtual field calculates the number of saved books
+ (this.savedBooks.length) and returns it as a part of the user object. 
+
+*/
 
 const User = model('User', userSchema);
 
