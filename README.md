@@ -190,18 +190,18 @@ Users can utilise this web app to search for their desired books using the Googl
 ## 🖼️Screenshot
 
 Screenshot of Homescreen
-![Alt Text] (![Alt Text] (./assets/gif/your Gif here))
+![Book](./assets/Books.png)
 
 Screenshot of Saved books
-![Alt Text] (![Alt Text] (./assets/gif/your Gif here))
+![Saved-Books](./assets/Saved%20books.png)
 
 Screenshot of Login
-![Alt Text] (![Alt Text] (./assets/gif/your Gif here))
+![Login](./assets/Sign%20.png)
 
 ## 📹Video
 
-GIF of ```npm run develop``` search query, sign up, saved book
-![Alt Text] (![Alt Text] (./assets/gif/your Gif here))
+GIF of ```npm run develop``` search query, sign up, saved book and log out
+![GIF](./assets/Book%20Search.gif)
 
  
 ## ⚖️License

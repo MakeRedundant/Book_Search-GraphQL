@@ -8,42 +8,48 @@ import { saveBookIds, getSavedBookIds } from "../utils/localStorage";
 import { SAVE_BOOK } from "../utils/mutations";
 
 const SearchBooks = () => {
+  // State variables
   const [searchedBooks, setSearchedBooks] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
+  // Apollo mutation hook
   const [saveBook, { error }] = useMutation(SAVE_BOOK);
+
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   });
 
+  // Handle form submission to search for books
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    // Validate search input
     if (!searchInput) {
       return false;
     }
 
     try {
+      // Call API function to search Google Books
       const response = await searchGoogleBooks(searchInput);
 
+      // Handle response from Google Books API
       if (!response.ok) {
-        throw new Error("something went wrong!");
+        throw new Error("Something went wrong!");
       }
 
+      // Extract book data from API response
       const { items } = await response.json();
-      console.log(items);
-
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ["No author to display"],
         title: book.volumeInfo.title,
-        description: book.volumeInfo.description || "no description",
+        description: book.volumeInfo.description || "No description available",
         image: book.volumeInfo.imageLinks?.thumbnail || "",
         link: book.volumeInfo.canonicalVolumeLink || "",
       }));
-      console.log(bookData);
 
+      // Update state with searched books data and reset search input
       setSearchedBooks(bookData);
       setSearchInput("");
     } catch (err) {
@@ -51,18 +57,21 @@ const SearchBooks = () => {
     }
   };
 
+  // Handle saving a book
   const handleSaveBook = async (bookId) => {
+    // Find the book to save based on bookId
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
-    console.log(bookToSave);
 
+    // Get authentication token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-    console.log(token);
 
+    // Checks if token exists
     if (!token) {
       return false;
     }
 
     try {
+      // Call Apollo mutation to save the book
       const { data } = await saveBook({
         variables: {
           authors: bookToSave.authors,
@@ -74,13 +83,13 @@ const SearchBooks = () => {
         },
       });
 
-      // if book successfully saves to user's account, save book id to state
+      // Update state with saved bookIds
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);
     }
   };
-
+//HTML JSX stuff here
   return (
     <>
       <div className="text-light bg-dark p-5">
