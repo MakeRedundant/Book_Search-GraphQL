@@ -47,7 +47,7 @@ const startApolloServer = async () => {
   }
 
 /*
-This code ensures that when the server is running in production mode (NODE_ENV set to 'production'), it serves the static assets from the client/dist directory.
+HI This code ensures that when the server is running in production mode (NODE_ENV set to 'production'), it serves the static assets from the client/dist directory.
  
 app.get(*) sets up a route handeler for all HTTP Get requests that doesnt match any specific routes defined in your server.
 * is a wild card that matches any path
